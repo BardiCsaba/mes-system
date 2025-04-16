@@ -26,7 +26,7 @@ public class ProductionOrderController {
     public ResponseEntity<Void> receiveProductionOrder(@Valid @RequestBody MesProductionOrderDto orderRequest) {
         try {
             log.info("Received production order request via REST: {}", orderRequest);
-            productionService.queueProductionOrder(orderRequest);
+            productionService.queueAndProcessProductionOrder(orderRequest);
             return ResponseEntity.accepted().build();
         } catch (Exception e) {
             log.error("Error processing production order request: {}", orderRequest, e);
