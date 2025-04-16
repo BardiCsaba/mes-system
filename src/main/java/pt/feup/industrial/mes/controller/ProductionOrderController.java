@@ -25,11 +25,14 @@ public class ProductionOrderController {
     @PostMapping
     public ResponseEntity<Void> receiveProductionOrder(@Valid @RequestBody MesProductionOrderDto orderRequest) {
         try {
-            log.info("Received production order request via REST: {}", orderRequest);
-            productionService.queueAndProcessProductionOrder(orderRequest);
-            return ResponseEntity.accepted().build();
+            log.info("Received REST request for production order: {}", orderRequest);
+
+            productionService.receiveAndStoreErpOrder(orderRequest);
+
+            return ResponseEntity.ok().build();
+
         } catch (Exception e) {
-            log.error("Error processing production order request: {}", orderRequest, e);
+            log.error("Error processing/saving production order request: {}", orderRequest, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
