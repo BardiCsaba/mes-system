@@ -1,0 +1,356 @@
+{
+	"info": {
+		"_postman_id": "b49a16e7-87a7-4c96-993f-0ec6cfce802e",
+		"name": "Industrial Informatics - MES Query API",
+		"description": "Collection to query MES Order Step status, master data, and statistics.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33451925"
+	},
+	"item": [
+		{
+			"name": "Order Steps",
+			"item": [
+				{
+					"name": "Get All MES Order Steps",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{mesBaseUrl}}/api/mes/order-steps",
+							"host": [
+								"{{mesBaseUrl}}"
+							],
+							"path": [
+								"api",
+								"mes",
+								"order-steps"
+							]
+						},
+						"description": "Retrieves a list of all MES Order Steps known to the system."
+					},
+					"response": []
+				},
+				{
+					"name": "Get MES Step by Internal ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{mesBaseUrl}}/api/mes/order-steps/:mesStepId",
+							"host": [
+								"{{mesBaseUrl}}"
+							],
+							"path": [
+								"api",
+								"mes",
+								"order-steps",
+								":mesStepId"
+							],
+							"variable": [
+								{
+									"key": "mesStepId",
+									"value": "1",
+									"description": "The internal database ID of the MesOrderStep."
+								}
+							]
+						},
+						"description": "Retrieves a specific MES Order Step using its internal database ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Get MES Step by ERP Item ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{mesBaseUrl}}/api/mes/order-steps/by-erp-item/:erpOrderItemId",
+							"host": [
+								"{{mesBaseUrl}}"
+							],
+							"path": [
+								"api",
+								"mes",
+								"order-steps",
+								"by-erp-item",
+								":erpOrderItemId"
+							],
+							"variable": [
+								{
+									"key": "erpOrderItemId",
+									"value": "1",
+									"description": "The unique Order Item ID provided by the ERP."
+								}
+							]
+						},
+						"description": "Retrieves a specific MES Order Step using the unique ID from the corresponding ERP order item."
+					},
+					"response": []
+				},
+				{
+					"name": "Get MES Steps by Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{mesBaseUrl}}/api/mes/order-steps?status=RECEIVED",
+							"host": [
+								"{{mesBaseUrl}}"
+							],
+							"path": [
+								"api",
+								"mes",
+								"order-steps"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "RECEIVED",
+									"description": "Filter by MesOrderStatus (e.g., RECEIVED, SCHEDULED, IN_PROGRESS, COMPLETED, FAILED)"
+								}
+							]
+						},
+						"description": "Retrieves all MES Order Steps matching the specified status."
+					},
+					"response": []
+				},
+				{
+					"name": "Get MES Steps by ERP Client Order ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{mesBaseUrl}}/api/mes/order-steps?erpClientOrderId=603",
+							"host": [
+								"{{mesBaseUrl}}"
+							],
+							"path": [
+								"api",
+								"mes",
+								"order-steps"
+							],
+							"query": [
+								{
+									"key": "erpClientOrderId",
+									"value": "603",
+									"description": "Filter by the parent Client Order ID from the ERP."
+								}
+							]
+						},
+						"description": "Retrieves all MES Order Steps associated with a specific ERP Client Order ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Get MES Steps by Machine Name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{mesBaseUrl}}/api/mes/order-steps?machineName=M1a",
+							"host": [
+								"{{mesBaseUrl}}"
+							],
+							"path": [
+								"api",
+								"mes",
+								"order-steps"
+							],
+							"query": [
+								{
+									"key": "machineName",
+									"value": "M1a",
+									"description": "Filter by the machine name (e.g., M1a, M6b) assigned to the step."
+								}
+							]
+						},
+						"description": "Retrieves MES Order Steps currently assigned to or processed by the specified machine."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for querying MES Order Steps"
+		},
+		{
+			"name": "Master Data",
+			"item": [
+				{
+					"name": "Get All Machines",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{mesBaseUrl}}/api/mes/machines",
+							"host": [
+								"{{mesBaseUrl}}"
+							],
+							"path": [
+								"api",
+								"mes",
+								"machines"
+							]
+						},
+						"description": "Retrieves a list of all configured machines."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Machine by Name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{mesBaseUrl}}/api/mes/machines/by-name/:machineName",
+							"host": [
+								"{{mesBaseUrl}}"
+							],
+							"path": [
+								"api",
+								"mes",
+								"machines",
+								"by-name",
+								":machineName"
+							],
+							"variable": [
+								{
+									"key": "machineName",
+									"value": "M1a",
+									"description": "The unique name of the machine (e.g., M1a, M6b)."
+								}
+							]
+						},
+						"description": "Retrieves a specific machine using its unique name."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Tools",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{mesBaseUrl}}/api/mes/tools",
+							"host": [
+								"{{mesBaseUrl}}"
+							],
+							"path": [
+								"api",
+								"mes",
+								"tools"
+							]
+						},
+						"description": "Retrieves a list of all configured tools (T1-T6)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Tool by Name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{mesBaseUrl}}/api/mes/tools/by-name/:toolName",
+							"host": [
+								"{{mesBaseUrl}}"
+							],
+							"path": [
+								"api",
+								"mes",
+								"tools",
+								"by-name",
+								":toolName"
+							],
+							"variable": [
+								{
+									"key": "toolName",
+									"value": "T1",
+									"description": "The unique name of the tool (e.g., T1, T6)."
+								}
+							]
+						},
+						"description": "Retrieves a specific tool using its unique name."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for querying fixed master data like Machines and Tools"
+		},
+		{
+			"name": "Statistics",
+			"item": [
+				{
+					"name": "Get Machine Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{mesBaseUrl}}/api/mes/stats/machines",
+							"host": [
+								"{{mesBaseUrl}}"
+							],
+							"path": [
+								"api",
+								"mes",
+								"stats",
+								"machines"
+							]
+						},
+						"description": "Retrieves aggregated statistics for all machines (runtime, tool changes, processed items)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Tool Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{mesBaseUrl}}/api/mes/stats/tools",
+							"host": [
+								"{{mesBaseUrl}}"
+							],
+							"path": [
+								"api",
+								"mes",
+								"stats",
+								"tools"
+							]
+						},
+						"description": "Retrieves aggregated usage statistics for all tools."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Dock Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{mesBaseUrl}}/api/mes/stats/docks",
+							"host": [
+								"{{mesBaseUrl}}"
+							],
+							"path": [
+								"api",
+								"mes",
+								"stats",
+								"docks"
+							]
+						},
+						"description": "Retrieves aggregated statistics for all unloading docks (total/by type unloaded items)."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for querying aggregated statistics"
+		}
+	],
+	"variable": [
+		{
+			"key": "mesBaseUrl",
+			"value": "http://localhost:8081",
+			"type": "string",
+			"description": "Base URL of the running MES Spring Boot application. Adjust port if needed."
+		}
+	]
+}

@@ -26,7 +26,7 @@ public class Tool {
     @Column(name = "tool_name", nullable = false, unique = true) // e.g., "T1", "T2"
     private String toolName;
 
-    @Column(name = "total_usage_seconds", nullable = false)
+    @Column(name = "total_usage_seconds", nullable = false, columnDefinition = "bigint default 0")
     private long totalUsageSeconds = 0L;
 
     @Override
