@@ -3,34 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MES Dashboard</title>
-    <style>
-        body { font-family: sans-serif; margin: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        tr:nth-child(even) { background-color: #f9f9f9; }
-        .status-received { color: gray; }
-        .status-scheduled { color: orange; }
-        .status-in_progress { color: blue; font-weight: bold; }
-        .status-completed { color: green; }
-        .status-failed { color: red; font-weight: bold; }
-        .no-orders { color: gray; font-style: italic; }
-        .refresh-link { margin-bottom: 15px; display: block; }
-    </style>
+    <title th:text="${pageTitle}">MES Dashboard</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/mes-style.css}"/>
 </head>
 <body>
 
-<h1>MES Production Order Steps</h1>
+<div th:replace="~{layout/main_layout :: header}"></div>
 
-<a href="/ui/dashboard" class="refresh-link">Refresh List</a>
+<main class="content-wrapper">
 
-<div th:if="${orderSteps == null || orderSteps.isEmpty()}">
-    <p class="no-orders">No order steps found in the MES system.</p>
-</div>
+    <h2>Production Order Steps Dashboard</h2>
 
-<div th:if="${orderSteps != null && !orderSteps.isEmpty()}">
-    <table>
+    <a href="/ui/dashboard" class="refresh-link">Refresh List</a>
+
+    <div th:if="${orderSteps == null || orderSteps.isEmpty()}">
+        <p class="no-data">No active order steps found.</p>
+    </div>
+
+    <table th:unless="${orderSteps == null || orderSteps.isEmpty()}">
         <thead>
         <tr>
             <th>MES ID</th>
@@ -41,6 +31,7 @@
             <th>Status</th>
             <th>Assigned Machine</th>
             <th>Received</th>
+            <th>Started</th>
             <th>Completed</th>
         </tr>
         </thead>
@@ -52,15 +43,20 @@
             <td th:text="${step.requiredQuantity}">10</td>
             <td th:text="${step.dueDate}">2025-04-25</td>
             <td>
-                <span th:text="${step.status}"
-                      th:classappend="'status-' + ${#strings.toLowerCase(step.status.name())}">RECEIVED</span>
+                        <span class="status"
+                              th:text="${step.status}"
+                              th:classappend="'status-' + ${#strings.toLowerCase(step.status.name())}">RECEIVED</span>
             </td>
-            <td th:text="${step.assignedMachine?.machineName}">-</td>
-            <td th:text="${#temporals.format(step.receivedTimestamp, 'yyyy-MM-dd HH:mm:ss')}">-</td>
-            <td th:text="${step.completionTimestamp != null ? #temporals.format(step.completionTimestamp, 'yyyy-MM-dd HH:mm:ss') : '-'}">-</td>
+            <td th:text="${step.assignedMachine?.machineName} ?: '-'">M1a</td>
+            <td th:text="${step.receivedTimestamp != null ? #temporals.format(step.receivedTimestamp, 'dd-MM HH:mm:ss') : '-'}"></td>
+            <td th:text="${step.startProcessingTimestamp != null ? #temporals.format(step.startProcessingTimestamp, 'dd-MM HH:mm:ss') : '-'}"></td>
+            <td th:text="${step.completionTimestamp != null ? #temporals.format(step.completionTimestamp, 'dd-MM HH:mm:ss') : '-'}"></td>
         </tr>
         </tbody>
     </table>
-</div>
+</main>
+
+<div th:replace="~{layout/main_layout :: footer}"></div>
+
 </body>
 </html>

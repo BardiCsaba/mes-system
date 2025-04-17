@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle ?: 'MES Application'}">MES Application</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/mes-style.css}"/>
+</head>
+<body>
+
+<header class="main-header" th:fragment="header">
+    <h1>Manufacturing Execution System</h1>
+    <nav class="main-nav">
+        <a th:href="@{/ui/dashboard}">Dashboard</a>
+        <a th:href="@{/ui/statistics}">Statistics</a>
+    </nav>
+</header>
+
+<footer class="main-footer" th:fragment="footer">
+    <p>© Industrial Informatics - FEUP <span th:text="${#dates.year(#dates.createNow())}"></span></p>
+</footer>
+
+</body>
+</html>

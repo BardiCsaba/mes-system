@@ -9,7 +9,10 @@ import pt.feup.industrial.mes.model.MesOrderStep;
 import pt.feup.industrial.mes.service.MesStatisticsService;
 import pt.feup.industrial.mes.service.ProductionService;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Controller
 @RequestMapping("/ui")
@@ -24,13 +27,12 @@ public class MesUiController {
         this.statisticsService = statisticsService;
     }
 
-    @GetMapping("/dashboard") // Maps requests to http://localhost:8081/ui/dashboard
+    @GetMapping("/dashboard")
     public String showDashboard(Model model) {
         List<MesOrderStep> orderSteps = productionService.getAllOrderSteps();
-
         model.addAttribute("orderSteps", orderSteps);
-
-        return "mes_dashboard"; // Spring Boot + Thymeleaf will look for src/main/resources/templates/mes_dashboard.html
+        model.addAttribute("pageTitle", "MES Dashboard");
+        return "mes_dashboard";
     }
 
     @GetMapping("/statistics")
@@ -38,6 +40,13 @@ public class MesUiController {
         model.addAttribute("machineStats", statisticsService.getMachineStatistics());
         model.addAttribute("toolStats", statisticsService.getToolStatistics());
         model.addAttribute("dockStats", statisticsService.getDockStatistics());
+        model.addAttribute("pageTitle", "MES Statistics");
+
+        RuntimeMXBean rb = ManagementFactory.getRuntimeMXBean();
+        long uptimeMillis = rb.getUptime();
+        long uptimeSeconds = TimeUnit.MILLISECONDS.toSeconds(uptimeMillis);
+
+        model.addAttribute("applicationUptimeSeconds", Math.max(1L, uptimeSeconds));
 
         return "mes_statistics";
     }
