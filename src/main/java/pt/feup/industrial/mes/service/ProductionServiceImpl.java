@@ -3,6 +3,7 @@ package pt.feup.industrial.mes.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import pt.feup.industrial.mes.model.MesOrderStep;
 import pt.feup.industrial.mes.repository.MesOrderStepRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -98,18 +100,18 @@ public class ProductionServiceImpl implements ProductionService {
         Optional<MesOrderStep> stepOpt = mesOrderStepRepository.findById(mesOrderStepId);
 
         if (stepOpt.isEmpty()) {
-            log.error("Simulation Error: MesOrderStep with ID {} not found.", mesOrderStepId);
+            log.error("Processing Error: MesOrderStep with ID {} not found.", mesOrderStepId);
             return;
         }
         MesOrderStep step = stepOpt.get();
 
         if (step.getStatus() != MesOrderStatus.RECEIVED && step.getStatus() != MesOrderStatus.SCHEDULED) {
-            log.warn("Simulation Warning: Step {} is not in a processable state (current state: {}). Skipping simulation.",
+            log.warn("Processing Warning: Step {} is not in a processable state (current state: {}). Skipping simulation.",
                     mesOrderStepId, step.getStatus());
             return;
         }
 
-        log.info("Starting processing simulation for MES Step ID: {} (ERP Item ID: {})", step.getId(), step.getErpOrderItemId());
+        log.info("Starting processing for MES Step ID: {} (ERP Item ID: {})", step.getId(), step.getErpOrderItemId());
 
         step.setStatus(MesOrderStatus.IN_PROGRESS);
         step.setStartProcessingTimestamp(LocalDateTime.now());
@@ -123,7 +125,7 @@ public class ProductionServiceImpl implements ProductionService {
             Thread.sleep(processingTimeMs);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            log.error("Processing simulation interrupted for MES Step ID {}", step.getId());
+            log.error("Processing interrupted for MES Step ID {}", step.getId());
 
             step.setStatus(MesOrderStatus.FAILED);
             step.setCompletionTimestamp(LocalDateTime.now());
@@ -136,7 +138,7 @@ public class ProductionServiceImpl implements ProductionService {
         step.setCompletionTimestamp(completionTime);
 
         if (processingSuccess) {
-            log.info("Simulated processing COMPLETE for MES Step ID {}", step.getId());
+            log.info("Processing COMPLETE for MES Step ID {}", step.getId());
             step.setStatus(MesOrderStatus.COMPLETED);
             mesOrderStepRepository.save(step);
 
@@ -148,9 +150,14 @@ public class ProductionServiceImpl implements ProductionService {
             erpClientService.notifyErpItemCompleted(completionInfo);
 
         } else {
-            log.warn("Simulated processing FAILED for MES Step ID {}", step.getId());
+            log.warn("Processing FAILED for MES Step ID {}", step.getId());
             step.setStatus(MesOrderStatus.FAILED);
             mesOrderStepRepository.save(step);
         }
+    }
+
+    public List<MesOrderStep> getAllOrderSteps() {
+        log.debug("Fetching all MES Order Steps from the database...");
+        return mesOrderStepRepository.findAll(Sort.by(Sort.Direction.DESC, "receivedTimestamp"));
     }
 }
