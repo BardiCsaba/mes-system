@@ -106,6 +106,7 @@ public class ProductionServiceImpl implements ProductionService {
         Optional<MesOrderStep> stepOpt = mesOrderStepRepository.findById(mesOrderStepId);
         MesOrderStep step = stepOpt.get();
 
+        // TODO REAL SCHEDULING
         // THIS ASSUMES A MACHINE NAMED 'M1a' EXISTS IN DB
         // For testing purposes, we are hardcoding the machine name.
         Machine assignedMachine = machineRepository.findByMachineName("M1a").orElse(null);
@@ -121,6 +122,7 @@ public class ProductionServiceImpl implements ProductionService {
             step.setAssignedMachine(assignedMachine);
         }
 
+        // TODO
         // Let's assume T1 is needed for product type 5.
         Tool requiredTool = null;
         if (step.getProductType() == 5) {
