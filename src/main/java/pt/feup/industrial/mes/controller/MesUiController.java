@@ -6,7 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import pt.feup.industrial.mes.model.MesOrderStep;
-import pt.feup.industrial.mes.service.MesStatisticsService;
+import pt.feup.industrial.mes.service.MesDisplayStatisticsService;
 import pt.feup.industrial.mes.service.ProductionService;
 
 import java.lang.management.ManagementFactory;
@@ -18,13 +18,13 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping("/ui")
 public class MesUiController {
 
-    private final ProductionService productionService;
-    private final MesStatisticsService statisticsService;
+    private final ProductionService productionService; // For dashboard
+    private final MesDisplayStatisticsService displayStatisticsService; // For statistics
 
     @Autowired
-    public MesUiController(ProductionService productionService, MesStatisticsService statisticsService) {
+    public MesUiController(ProductionService productionService, MesDisplayStatisticsService displayStatisticsService) {
         this.productionService = productionService;
-        this.statisticsService = statisticsService;
+        this.displayStatisticsService = displayStatisticsService;
     }
 
     @GetMapping("/dashboard")
@@ -37,17 +37,16 @@ public class MesUiController {
 
     @GetMapping("/statistics")
     public String showStatistics(Model model) {
-        model.addAttribute("machineStats", statisticsService.getMachineStatistics());
-        model.addAttribute("toolStats", statisticsService.getToolStatistics());
-        model.addAttribute("dockStats", statisticsService.getDockStatistics());
+        model.addAttribute("machineStats", displayStatisticsService.getCombinedMachineStatistics());
+        model.addAttribute("toolStats", displayStatisticsService.getCombinedToolStatistics());
+        model.addAttribute("dockStats", displayStatisticsService.getDockStatistics());
         model.addAttribute("pageTitle", "MES Statistics");
 
         RuntimeMXBean rb = ManagementFactory.getRuntimeMXBean();
         long uptimeMillis = rb.getUptime();
-        long uptimeSeconds = TimeUnit.MILLISECONDS.toSeconds(uptimeMillis);
-
-        model.addAttribute("applicationUptimeSeconds", Math.max(1L, uptimeSeconds));
-
+        model.addAttribute("applicationUptimeSeconds", Math.max(1L, TimeUnit.MILLISECONDS.toSeconds(uptimeMillis)));
+        model.addAttribute("lastMachineRefresh", displayStatisticsService.getLastMachineStatsRefreshTime());
+        model.addAttribute("lastToolRefresh", displayStatisticsService.getLastToolStatsRefreshTime());
         return "mes_statistics";
     }
 }

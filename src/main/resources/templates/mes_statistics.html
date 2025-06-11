@@ -12,86 +12,103 @@
 
 <main class="content-wrapper">
 
-    <div style="margin-bottom: 20px;">
+    <div style="margin-bottom: 15px;">
         <a href="/ui/statistics" class="action-link">Refresh Statistics Data</a>
     </div>
 
+    <div style="margin-bottom:20px; font-size:0.9em; color: #555;">
+        <p>PLC Machine Stats Last Refreshed:
+            <span th:text="${lastMachineRefresh != null ? #temporals.format(lastMachineRefresh, 'HH:mm:ss dd-MM-yyyy') : 'Never'}"></span>
+        </p>
+        <p>PLC Tool Stats Last Refreshed:
+            <span th:text="${lastToolRefresh != null ? #temporals.format(lastToolRefresh, 'HH:mm:ss dd-MM-yyyy') : 'Never'}"></span>
+        </p>
+    </div>
+
     <h2>Machine Statistics</h2>
-    <div th:if="${machineStats.isEmpty()}"><p class="no-data">No machine statistics available.</p></div>
-    <table th:unless="${machineStats.isEmpty()}">
+    <div th:if="${machineStats == null || machineStats.isEmpty()}"><p class="no-data">No machine statistics available.</p></div>
+    <table th:unless="${machineStats == null || machineStats.isEmpty()}">
         <thead>
         <tr>
             <th>Machine</th>
-            <th>State</th>
-            <th>Current Tool</th>
-            <th>Operating Time (s)</th>
-            <th>Occupation %</th>
-            <th>Tool Changes</th>
-            <th>Completed Steps</th>
-            <th>Completed by Type</th>
+            <th>MES State</th>
+            <th>Display Tool</th>
+            <th>PLC Operating (s)</th>
+            <th>Occupation % (PLC)</th>
+            <th>PLC Cycles</th>
+            <th>PLC Errors</th>
+            <th>MES Tool Changes</th>
+            <th>MES Steps Completed</th>
+            <th>MES Steps by Type</th>
+            <th>MES Workpieces (from steps)</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="mStat : ${machineStats}">
             <td th:text="${mStat.machineName}">M1a</td>
             <td>
-                         <span class="status"
-                               th:text="${mStat.currentState}"
-                               th:classappend="'status-' + ${#strings.toLowerCase(mStat.currentState.name())}">IDLE</span>
+                    <span class="status"
+                          th:text="${mStat.mesState}"
+                          th:classappend="'status-' + ${#strings.toLowerCase(mStat.mesState.name())}">IDLE</span>
             </td>
-            <td th:text="${mStat.currentToolName}">T1</td>
-            <td th:text="${mStat.totalOperatingSeconds}">120</td>
+            <td th:text="${mStat.displayCurrentToolName}">T1</td>
+            <td th:text="${mStat.plcOperatingSeconds ?: '-'}">0</td>
             <td>
-                <span th:if="${applicationUptimeSeconds > 0}"
-                      th:text="${#numbers.formatDecimal((mStat.totalOperatingSeconds * 100.0 / applicationUptimeSeconds), 1, 1)} + '%'">
-                        </span>
-                <span th:unless="${applicationUptimeSeconds > 0}">N/A</span>
+                    <span th:if="${applicationUptimeSeconds > 0 and mStat.plcOperatingSeconds != null}"
+                          th:text="${#numbers.formatDecimal((mStat.plcOperatingSeconds * 100.0 / applicationUptimeSeconds), 1, 1)} + '%'">
+                    </span>
+                <span th:unless="${applicationUptimeSeconds > 0 and mStat.plcOperatingSeconds != null}">N/A</span>
             </td>
-            <td th:text="${mStat.totalToolChanges}">5</td>
-            <td th:text="${mStat.totalCompletedSteps}">15</td>
+            <td th:text="${mStat.plcCycleCount ?: '-'}">0</td>
+            <td th:text="${mStat.plcErrorCount ?: '-'}">0</td>
+            <td th:text="${mStat.mesTotalToolChanges}">0</td>
+            <td th:text="${mStat.mesCompletedSteps}">0</td>
             <td class="type-count">
-                        <span th:each="entry : ${mStat.completedStepsByType}"
-                              th:text="'P'+${entry.key}+': '+${entry.value}" />
-                <span class="no-data" th:if="${mStat.completedStepsByType == null or mStat.completedStepsByType.isEmpty()}">-</span>
+                    <span th:each="entry : ${mStat.mesCompletedStepsByType}"
+                          th:text="'P'+${entry.key}+': '+${entry.value}" />
+                <span class="no-data" th:if="${mStat.mesCompletedStepsByType == null or mStat.mesCompletedStepsByType.isEmpty()}">-</span>
             </td>
+            <td th:text="${mStat.mesWorkpiecesFromCompletedSteps}">0</td>
         </tr>
         </tbody>
     </table>
 
     <h2>Global Tool Usage</h2>
-    <div th:if="${toolStats.isEmpty()}"><p class="no-data">No tool usage statistics available.</p></div>
-    <table th:unless="${toolStats.isEmpty()}">
+    <div th:if="${toolStats == null || toolStats.isEmpty()}"><p class="no-data">No tool usage statistics available.</p></div>
+    <table th:unless="${toolStats == null || toolStats.isEmpty()}">
         <thead>
         <tr>
             <th>Tool</th>
-            <th>Total Usage Time (s)</th>
+            <th>Display Total Usage (s)</th>
+            <!--<th>MES Calculated Usage (s)</th> -->
         </tr>
         </thead>
         <tbody>
         <tr th:each="tStat : ${toolStats}">
             <td th:text="${tStat.toolName}">T1</td>
-            <td th:text="${tStat.totalUsageSeconds}">350</td>
+            <td th:text="${tStat.displayTotalUsageSeconds}">0</td>
+            <!-- <td th:text="${tStat.mesCalculatedUsageSeconds}">0</td> -->
         </tr>
         </tbody>
     </table>
 
     <h2>Unloading Dock Statistics</h2>
-    <div th:if="${dockStats.isEmpty()}"><p class="no-data">No unloading dock statistics available.</p></div>
-    <table th:unless="${dockStats.isEmpty()}">
+    <div th:if="${dockStats == null || dockStats.isEmpty()}"><p class="no-data">No unloading dock statistics available.</p></div>
+    <table th:unless="${dockStats == null || dockStats.isEmpty()}">
         <thead>
         <tr>
             <th>Dock</th>
-            <th>Total Unloaded</th>
-            <th>Unloaded by Type</th>
+            <th>Total Unloaded Workpieces</th>
+            <th>Unloaded by Type (Qty)</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="dStat : ${dockStats}">
             <td th:text="${dStat.dockName}">U1</td>
-            <td th:text="${dStat.totalUnloadedWorkpieces}">25</td>
+            <td th:text="${dStat.totalUnloadedWorkpieces}">0</td>
             <td class="type-count">
-                         <span th:each="entry : ${dStat.unloadedWorkpiecesByType}"
-                               th:text="'P'+${entry.key}+': '+${entry.value}" />
+                     <span th:each="entry : ${dStat.unloadedWorkpiecesByType}"
+                           th:text="'P'+${entry.key}+': '+${entry.value}" />
                 <span class="no-data" th:if="${dStat.unloadedWorkpiecesByType == null or dStat.unloadedWorkpiecesByType.isEmpty()}">-</span>
             </td>
         </tr>
