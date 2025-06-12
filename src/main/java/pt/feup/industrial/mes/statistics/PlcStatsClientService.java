@@ -28,7 +28,7 @@ public class PlcStatsClientService {
 
     @Autowired
     public PlcStatsClientService(WebClient.Builder webClientBuilder,
-                                       @Value("${python.plc.stats.api.baseUrl}") String pythonApiBaseUrl) {
+                                       @Value("${plc.stats.api.baseUrl}") String pythonApiBaseUrl) {
         this.pythonApiWebClient = webClientBuilder.baseUrl(pythonApiBaseUrl).build();
     }
 

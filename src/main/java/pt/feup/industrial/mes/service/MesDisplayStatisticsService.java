@@ -75,7 +75,7 @@ public class MesDisplayStatisticsService {
                 dto.setPlcCycleCount(plcMachineData.getCycleCount());
                 dto.setPlcErrorCount(plcMachineData.getErrorCount());
             } else {
-                dto.setDisplayOperatingSeconds(mesMachine.getTotalOperatingSeconds()); // Fallback to MES tracked time
+                dto.setDisplayOperatingSeconds(mesMachine.getTotalOperatingSeconds());
                 dto.setDisplayCurrentToolName(dto.getDisplayCurrentToolName());
                 log.trace("No PLC data found in cache for machine {}", mesMachine.getMachineName());
             }
@@ -95,9 +95,9 @@ public class MesDisplayStatisticsService {
             PlcToolDataDto plcToolData = plcDataMap.get(mesTool.getToolName());
             if (plcToolData != null) {
                 dto.setDisplayTotalUsageSeconds(plcToolData.getUsageSecondsOnPlc());
-                // dto.setPlcUsageCycles(plcToolData.getUsageCyclesOnPlc()); // If you add this to DTO
+                dto.setPlcUsageCycles(plcToolData.getUsageCyclesOnPlc());
             } else {
-                dto.setDisplayTotalUsageSeconds(mesTool.getTotalUsageSeconds()); // Fallback to MES tracked time
+                dto.setDisplayTotalUsageSeconds(mesTool.getTotalUsageSeconds());
                 log.trace("No PLC data found in cache for tool {}", mesTool.getToolName());
             }
             return dto;
@@ -105,7 +105,7 @@ public class MesDisplayStatisticsService {
     }
 
     @Transactional(readOnly = true)
-    public List<MesDockDisplayStatsDto> getDockStatistics() { // This one is mostly MES data
+    public List<MesDockDisplayStatsDto> getDockStatistics() {
         List<UnloadingDock> docks = unloadingDockRepository.findAll();
         return docks.stream().map(dock -> {
             MesDockDisplayStatsDto dto = new MesDockDisplayStatsDto();

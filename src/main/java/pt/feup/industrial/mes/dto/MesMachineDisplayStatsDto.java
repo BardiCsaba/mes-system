@@ -21,4 +21,5 @@ public class MesMachineDisplayStatsDto {
 
     private Integer plcCycleCount;
     private Integer plcErrorCount;
+    private Long plcOperatingSeconds;
 }

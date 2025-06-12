@@ -6,4 +6,5 @@ import lombok.Data;
 public class MesToolDisplayStatsDto {
     private String toolName;
     private long displayTotalUsageSeconds; // Prioritized: PLC, fallback: MES
+    private int plcUsageCycles;
 }
